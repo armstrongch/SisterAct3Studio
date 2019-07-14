@@ -6,10 +6,11 @@
   <style type="text/css">
    .table {
      border: 1px solid black;
+     float: left;
    }
   </style>
   </head>
-  <body onkeydown="keyDown(event)">
+  <body onkeydown="keyDown(event)" onkeyup="keyUp(event)">
     <p id="pressEnter">Set Actor KeyCodes before Recording!</p>
     <div id="setup">
       <button id="btn1" onclick="setActorKeyCode(1)">Set Actor 1 KeyCode</button>
@@ -17,12 +18,18 @@
       <button id="btn2" onclick="setActorKeyCode(2)">Set Actor 2 KeyCode</button>
       <p id="currentKeyCode2">Current: none</p><br/>
     </div>
-    <table id="outputTable">
-      <tr>
-        <th>Actor 1</th>
-        <th>Actor 2</th>
-      </tr>
-    </table>
+    <div id="recordingTable" style="display: none">
+      <table id="actor1Table">
+        <tr>
+          <th>Actor 1</th>
+        </tr>
+      </table>
+      <table id="actor2Table">
+        <tr>
+          <th>Actor 2</th>
+        </tr>
+      </table>
+    </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
     <script>
         var actor1KeyCode = -1;
@@ -31,6 +38,8 @@
         var actorKeyCodeToSet = "";
         var currentlyRecording = false;
         var startTimeStamp;
+        var actor1KeyDown = false;
+        var actor2KayDown = false;
         
         function setActorKeyCode(actorNum)
         {
@@ -53,7 +62,7 @@
         
         function keyDown(event)
         {
-          if ((settingKeyCode) && (event.keyCode != 13)) //don't allow 'enter' for actors
+          if ((!currentlyRecording) && (settingKeyCode) && (event.keyCode != 13)) //don't allow 'enter' for actors
           {
             if (actorKeyCodeToSet == 1)
             {
@@ -76,6 +85,7 @@
           else if ((actor1KeyCode != -1) && (actor2KeyCode != -1) && (event.keyCode == 13) && (!currentlyRecording))
           {
             $('#setup').css('display','none');
+            $('#recordingTable').css('display','block');
             currentlyRecording = true;
             startTimeStamp = Date.now();
             $('#pressEnter').html('Press \'Enter\' to stop recording.');
@@ -87,11 +97,48 @@
               currentlyRecording = false;
               $('#pressEnter').html('Finished Recording');
             }
-            else if (event.keyCode == actor1KeyCode)
+            else if ((event.keyCode == actor1KeyCode) && (!actor1KeyDown))
             {
               var timeStamp = Date.now() - startTimeStamp;
-              alert("TEST");
-              $('#outputTable tr:last').after('<tr><td></td><td></td>' + timeStamp + '</tr>');
+              $('#actor1Table > tbody:last-child').append(
+                '<tr>'
+                +'<td>' + timeStamp + '</td>'
+                +'</tr>');
+              actor1KeyDown = true;
+            }
+            else if ((event.keyCode == actor2KeyCode) && (!actor2KeyDown))
+            {
+              var timeStamp = Date.now() - startTimeStamp;
+              $('#actor2Table > tbody:last-child').append(
+                '<tr>'
+                +'<td>' + timeStamp + '</td>'
+                +'</tr>');
+              actor2KeyDown = true;
+            }
+          }
+          
+          function keyUp(event)
+          {
+            if (currentlyRecording)
+            {
+              if ((event.keyCode == actor1KeyCode) && (actor1KeyDown))
+              {
+                var timeStamp = Date.now() - startTimeStamp;
+                $('#actor1Table > tbody:last-child').append(
+                  '<tr>'
+                  +'<td>' + timeStamp + '</td>'
+                  +'</tr>');
+                actor1KeyDown = false;
+              }
+              else if ((event.keyCode == actor2KeyCode) && (actor2KeyDown))
+              {
+                var timeStamp = Date.now() - startTimeStamp;
+                $('#actor2Table > tbody:last-child').append(
+                  '<tr>'
+                  +'<td>' + timeStamp + '</td>'
+                  +'</tr>');
+                actor2KeyDown = false;
+              }
             }
           }
         }
