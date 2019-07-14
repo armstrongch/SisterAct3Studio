@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Record Dialog</title>
   <style type="text/css">
-   .table {
+   table {
      border: 1px solid black;
      float: left;
    }
@@ -24,7 +24,7 @@
           <th>Actor 1</th>
         </tr>
       </table>
-      <table id="actor2Table" style="float: left">
+      <table id="actor2Table">
         <tr>
           <th>Actor 2</th>
         </tr>
@@ -39,7 +39,7 @@
       var currentlyRecording = false;
       var startTimeStamp;
       var actor1KeyDown = false;
-      var actor2KayDown = false;
+      var actor2KeyDown = false;
       
       function setActorKeyCode(actorNum)
       {
