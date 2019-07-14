@@ -7,29 +7,60 @@
    
   </style>
   </head>
-  <body>
-  <p id="pressEnter">Set Actor Keycodes before Recording!</p>
-  <button id="btn1" onclick="setActorKeycode(1)">Set Actor 1 Keycode</button>
-  <button id="btn2" onclick="setActorKeycode(2)">Set Actor 2 Keycode</button>
-  <table id="outputTable">
-  </table>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
-  <script>
-      var actor1KeyCode;
-      var actor2KeyCode;
-      var settingKeyCode = false;
-      var actorKeyCodeToSet = "";
-      
-      function setActorKeycode(actorNum)
-      {
-        if (!settingKeyCode)
+  <body onkeydown="keyDown(event)">
+    <p id="pressEnter">Set Actor KeyCodes before Recording!</p>
+    <button id="btn1" onclick="setActorKeyCode(1)">Set Actor 1 KeyCode</button>
+    <p id="currentKeyCode1">Current: none</p><br/>
+    <button id="btn2" onclick="setActorKeyCode(2)">Set Actor 2 KeyCode</button>
+    <p id="currentKeyCode2">Current: none</p><br/>
+    <table id="outputTable">
+    </table>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+    <script>
+        var actor1KeyCode;
+        var actor2KeyCode;
+        var settingKeyCode = false;
+        var actorKeyCodeToSet = "";
+        var currentlyRecording = false;
+        
+        function setActorKeyCode(actorNum)
         {
-          $('#btn1').prop('disabled', true);
-          $('#btn2').prop('disabled', true);
-          actorKeyCodeToSet = actorNum;
-          settingKeyCode = false;
+          if (!settingKeyCode)
+          {
+            $('#btn1').prop('disabled', true);
+            $('#btn2').prop('disabled', true);
+            actorKeyCodeToSet = actorNum;
+            settingKeyCode = true;
+            if (actorNum == 1)
+            {
+              $('#currentKeyCode1').html('Setting Actor 1 KeyCode');
+            }
+            else
+            {
+              $('#currentKeyCode2').html('Setting Actor 2 KeyCode');
+            }
+          }
         }
-      }
-  </script>
+        
+        function keyDown(event)
+        {
+          if (settingKeyCode)
+          {
+            if (actorKeyCodeToSet == 1)
+            {
+              actor1KeyCode = event.keyCode;
+              $('#currentKeyCode1').html('Current: ' + event.keyCode);
+            }
+            else
+            {
+              actor2KeyCode = event.keyCode;
+              $('#currentKeyCode2').html('Current: ' + event.keyCode);
+            }
+            settingKeyCode = false;
+            $('#btn1').prop('disabled', false);
+            $('#btn2').prop('disabled', false);
+          }
+        }
+    </script>
   </body>
 </html>
