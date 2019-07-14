@@ -24,7 +24,7 @@
           <th>Actor 1</th>
         </tr>
       </table>
-      <table id="actor2Table">
+      <table id="actor2Table" style="float: left">
         <tr>
           <th>Actor 2</th>
         </tr>
@@ -32,72 +32,74 @@
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
     <script>
-        var actor1KeyCode = -1;
-        var actor2KeyCode = -1;
-        var settingKeyCode = false;
-        var actorKeyCodeToSet = "";
-        var currentlyRecording = false;
-        var startTimeStamp;
-        var actor1KeyDown = false;
-        var actor2KayDown = false;
-        
-        function setActorKeyCode(actorNum)
+      var actor1KeyCode = -1;
+      var actor2KeyCode = -1;
+      var settingKeyCode = false;
+      var actorKeyCodeToSet = "";
+      var currentlyRecording = false;
+      var startTimeStamp;
+      var actor1KeyDown = false;
+      var actor2KayDown = false;
+      
+      function setActorKeyCode(actorNum)
+      {
+        if (!settingKeyCode)
         {
-          if (!settingKeyCode)
+          $('#btn1').prop('disabled', true);
+          $('#btn2').prop('disabled', true);
+          actorKeyCodeToSet = actorNum;
+          settingKeyCode = true;
+          if (actorNum == 1)
           {
-            $('#btn1').prop('disabled', true);
-            $('#btn2').prop('disabled', true);
-            actorKeyCodeToSet = actorNum;
-            settingKeyCode = true;
-            if (actorNum == 1)
-            {
-              $('#currentKeyCode1').html('Setting Actor 1 KeyCode');
-            }
-            else
-            {
-              $('#currentKeyCode2').html('Setting Actor 2 KeyCode');
-            }
+            $('#currentKeyCode1').html('Setting Actor 1 KeyCode');
+          }
+          else
+          {
+            $('#currentKeyCode2').html('Setting Actor 2 KeyCode');
           }
         }
-        
-        function keyDown(event)
+      }
+      
+      function keyDown(event)
+      {
+        if ((!currentlyRecording) && (settingKeyCode) && (event.keyCode != 13)) //don't allow 'enter' for actors
         {
-          if ((!currentlyRecording) && (settingKeyCode) && (event.keyCode != 13)) //don't allow 'enter' for actors
+          if (actorKeyCodeToSet == 1)
           {
-            if (actorKeyCodeToSet == 1)
-            {
-              actor1KeyCode = event.keyCode;
-              $('#currentKeyCode1').html('Current: ' + event.keyCode);
-            }
-            else
-            {
-              actor2KeyCode = event.keyCode;
-              $('#currentKeyCode2').html('Current: ' + event.keyCode);
-            }
-            settingKeyCode = false;
-            $('#btn1').prop('disabled', false);
-            $('#btn2').prop('disabled', false);
-            if ((actor1KeyCode != -1) && (actor2KeyCode != -1))
-            {
-              $('#pressEnter').html('Press \'Enter\' to start recording.');
-            }
+            actor1KeyCode = event.keyCode;
+            $('#currentKeyCode1').html('Current: ' + event.keyCode);
           }
-          else if ((actor1KeyCode != -1) && (actor2KeyCode != -1) && (event.keyCode == 13) && (!currentlyRecording))
+          else
           {
-            $('#setup').css('display','none');
-            $('#recordingTable').css('display','block');
-            currentlyRecording = true;
-            startTimeStamp = Date.now();
-            $('#pressEnter').html('Press \'Enter\' to stop recording.');
+            actor2KeyCode = event.keyCode;
+            $('#currentKeyCode2').html('Current: ' + event.keyCode);
           }
-          else if (currentlyRecording)
+          settingKeyCode = false;
+          $('#btn1').prop('disabled', false);
+          $('#btn2').prop('disabled', false);
+          if ((actor1KeyCode != -1) && (actor2KeyCode != -1))
           {
-            if (event.keyCode == 13)
-            {
-              currentlyRecording = false;
-              $('#pressEnter').html('Finished Recording');
-            }
-            else if ((event.keyCode == actor1KeyCode) && (!actor1KeyDown))
+            $('#pressEnter').html('Press \'Enter\' to start recording.');
+          }
+        }
+        else if ((actor1KeyCode != -1) && (actor2KeyCode != -1) && (event.keyCode == 13) && (!currentlyRecording))
+        {
+          $('#setup').css('display','none');
+          $('#recordingTable').css('display','block');
+          currentlyRecording = true;
+          startTimeStamp = Date.now();
+          $('#pressEnter').html('Press \'Enter\' to stop recording.');
+        }
+        else if (currentlyRecording)
+        {
+          if (event.keyCode == 13)
+          {
+            currentlyRecording = false;
+            $('#pressEnter').html('Finished Recording');
+          }
+          else 
+          {
+            if ((event.keyCode == actor1KeyCode) && (!actor1KeyDown))
             {
               var timeStamp = Date.now() - startTimeStamp;
               $('#actor1Table > tbody:last-child').append(
@@ -106,7 +108,7 @@
                 +'</tr>');
               actor1KeyDown = true;
             }
-            else if ((event.keyCode == actor2KeyCode) && (!actor2KeyDown))
+            if ((event.keyCode == actor2KeyCode) && (!actor2KeyDown))
             {
               var timeStamp = Date.now() - startTimeStamp;
               $('#actor2Table > tbody:last-child').append(
@@ -116,32 +118,33 @@
               actor2KeyDown = true;
             }
           }
-          
-          function keyUp(event)
+        }
+      }
+        
+      function keyUp(event)
+      {
+        if (currentlyRecording)
+        {
+          if ((event.keyCode == actor1KeyCode) && (actor1KeyDown))
           {
-            if (currentlyRecording)
-            {
-              if ((event.keyCode == actor1KeyCode) && (actor1KeyDown))
-              {
-                var timeStamp = Date.now() - startTimeStamp;
-                $('#actor1Table > tbody:last-child').append(
-                  '<tr>'
-                  +'<td>' + timeStamp + '</td>'
-                  +'</tr>');
-                actor1KeyDown = false;
-              }
-              else if ((event.keyCode == actor2KeyCode) && (actor2KeyDown))
-              {
-                var timeStamp = Date.now() - startTimeStamp;
-                $('#actor2Table > tbody:last-child').append(
-                  '<tr>'
-                  +'<td>' + timeStamp + '</td>'
-                  +'</tr>');
-                actor2KeyDown = false;
-              }
-            }
+            var timeStamp = Date.now() - startTimeStamp;
+            $('#actor1Table > tbody:last-child').append(
+              '<tr>'
+              +'<td>' + timeStamp + '</td>'
+              +'</tr>');
+            actor1KeyDown = false;
+          }
+          if ((event.keyCode == actor2KeyCode) && (actor2KeyDown))
+          {
+            var timeStamp = Date.now() - startTimeStamp;
+            $('#actor2Table > tbody:last-child').append(
+              '<tr>'
+              +'<td>' + timeStamp + '</td>'
+              +'</tr>');
+            actor2KeyDown = false;
           }
         }
+      }
     </script>
   </body>
 </html>
